@@ -1,0 +1,51 @@
+# Power System Database Assistant - Dependencies
+
+To install all required dependencies, run the following command:
+
+```bash
+pip install email-validator flask flask-sqlalchemy gunicorn langchain langchain-community langchain-core langchain-google-genai langchain-groq langgraph psycopg2-binary pydantic python-dotenv rdflib requests-toolbelt
+```
+
+## Individual Package Versions
+
+- email-validator==2.1.0
+- flask==3.0.2
+- flask-sqlalchemy==3.1.1
+- gunicorn==23.0.0
+- langchain==0.1.12
+- langchain-community==0.0.29
+- langchain-core==0.1.36
+- langchain-google-genai==0.0.10
+- langchain-groq==0.0.1
+- langgraph==0.0.55
+- psycopg2-binary==2.9.9
+- pydantic==2.6.3
+- python-dotenv==1.0.1
+- rdflib==7.0.0
+- requests-toolbelt==1.0.0
+
+## Environment Setup Recommendations
+
+It's recommended to create a virtual environment before installing these dependencies:
+
+```bash
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+
+# Install dependencies
+pip install email-validator flask flask-sqlalchemy gunicorn langchain langchain-community langchain-core langchain-google-genai langchain-groq langgraph psycopg2-binary pydantic python-dotenv rdflib requests-toolbelt
+```
+
+## Additional Development Dependencies
+
+For development, you might also want to install:
+
+```bash
+pip install black flake8 pytest
+```

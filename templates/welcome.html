@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Assistant - Welcome</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        
+        .main-container {
+            flex: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1030;
+        }
+        
+        .db-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            height: 100%;
+        }
+        
+        .db-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .db-card .card-img-top {
+            height: 120px;
+            object-fit: contain;
+            padding: 20px;
+        }
+        
+        .db-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .app-description {
+            margin-bottom: 2rem;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: var(--bs-secondary-bg);
+        }
+        
+        .footer {
+            margin-top: auto;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        /* Form styles */
+        .connection-form {
+            display: none;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            background-color: var(--bs-secondary-bg);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Detailed db connection icons */
+        .db-detail-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle">
+        <button class="btn btn-sm btn-outline-secondary" id="toggle-theme">
+            <i class="bi bi-sun-fill" id="theme-icon"></i>
+            <span id="theme-text">Light Mode</span>
+        </button>
+    </div>
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Power System Database Assistant</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/chat">Chat</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container main-container mt-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="app-description text-center">
+                    <h1>Welcome to Power System Database Assistant</h1>
+                    <p class="lead">
+                        An advanced LLM-powered chatbot for querying various database systems with natural language. 
+                        This assistant can help you explore and analyze power system equipment data across different database platforms.
+                    </p>
+                    <div class="d-flex justify-content-center mt-4">
+                        <a href="/chat" class="btn btn-primary btn-lg">Try Demo with Default GraphDB Data</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="mb-4 text-center">Connect to Your Database</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-4">
+            <!-- GraphDB Card -->
+            <div class="col">
+                <div class="card db-card" data-db-type="graphdb">
+                    <div class="text-center p-3">
+                        <i class="bi bi-diagram-3 db-icon text-primary"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">GraphDB</h5>
+                        <p class="card-text">Connect to a SPARQL endpoint for semantic queries on your graph database.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PostgreSQL Card -->
+            <div class="col">
+                <div class="card db-card" data-db-type="postgres">
+                    <div class="text-center p-3">
+                        <i class="bi bi-database db-icon text-info"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">PostgreSQL</h5>
+                        <p class="card-text">Connect to your PostgreSQL database for SQL-based queries.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AWS RDS Card -->
+            <div class="col">
+                <div class="card db-card" data-db-type="aws-rds">
+                    <div class="text-center p-3">
+                        <i class="bi bi-cloud db-icon text-warning"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">AWS RDS</h5>
+                        <p class="card-text">Connect to an Amazon RDS instance for managed database access.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AWS Neptune Card -->
+            <div class="col">
+                <div class="card db-card" data-db-type="aws-neptune">
+                    <div class="text-center p-3">
+                        <i class="bi bi-tsunami db-icon text-success"></i>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">AWS Neptune</h5>
+                        <p class="card-text">Connect to Amazon Neptune for graph database queries.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Connection Forms - will be shown depending on card selection -->
+        <div id="connection-forms">
+            <!-- GraphDB Connection Form -->
+            <div id="graphdb-form" class="connection-form">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-3">
+                        <div class="db-detail-icon">
+                            <i class="bi bi-diagram-3 text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <h3>GraphDB Connection</h3>
+                        <p>Enter the details to connect to your GraphDB SPARQL endpoint.</p>
+                    </div>
+                </div>
+                <form id="form-graphdb" action="/set-connection" method="post">
+                    <input type="hidden" name="db_type" value="graphdb">
+                    <div class="mb-3">
+                        <label for="graphdb-endpoint" class="form-label">SPARQL Endpoint URL</label>
+                        <input type="url" class="form-control" id="graphdb-endpoint" name="endpoint" placeholder="https://example.com/sparql" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="graphdb-username" class="form-label">Username (Optional)</label>
+                        <input type="text" class="form-control" id="graphdb-username" name="username" placeholder="Username if required">
+                    </div>
+                    <div class="mb-3">
+                        <label for="graphdb-password" class="form-label">Password (Optional)</label>
+                        <input type="password" class="form-control" id="graphdb-password" name="password" placeholder="Password if required">
+                    </div>
+                    <div class="mb-3">
+                        <label for="graphdb-default-graph" class="form-label">Default Graph (Optional)</label>
+                        <input type="text" class="form-control" id="graphdb-default-graph" name="default_graph" placeholder="Default graph name">
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary cancel-connection">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Connect</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- PostgreSQL Connection Form -->
+            <div id="postgres-form" class="connection-form">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-3">
+                        <div class="db-detail-icon">
+                            <i class="bi bi-database text-info"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <h3>PostgreSQL Connection</h3>
+                        <p>Enter the details to connect to your PostgreSQL database.</p>
+                    </div>
+                </div>
+                <form id="form-postgres" action="/set-connection" method="post">
+                    <input type="hidden" name="db_type" value="postgres">
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label for="postgres-host" class="form-label">Host</label>
+                            <input type="text" class="form-control" id="postgres-host" name="host" placeholder="localhost or IP address" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="postgres-port" class="form-label">Port</label>
+                            <input type="number" class="form-control" id="postgres-port" name="port" value="5432" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="postgres-database" class="form-label">Database Name</label>
+                        <input type="text" class="form-control" id="postgres-database" name="database" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="postgres-username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="postgres-username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="postgres-password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="postgres-password" name="password" required>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary cancel-connection">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Connect</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- AWS RDS Connection Form -->
+            <div id="aws-rds-form" class="connection-form">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-3">
+                        <div class="db-detail-icon">
+                            <i class="bi bi-cloud text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <h3>AWS RDS Connection</h3>
+                        <p>Enter the details to connect to your Amazon RDS instance.</p>
+                    </div>
+                </div>
+                <form id="form-aws-rds" action="/set-connection" method="post">
+                    <input type="hidden" name="db_type" value="aws-rds">
+                    <div class="mb-3">
+                        <label for="aws-rds-endpoint" class="form-label">RDS Endpoint</label>
+                        <input type="text" class="form-control" id="aws-rds-endpoint" name="endpoint" placeholder="your-instance.region.rds.amazonaws.com" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="aws-rds-port" class="form-label">Port</label>
+                            <input type="number" class="form-control" id="aws-rds-port" name="port" value="5432" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="aws-rds-engine" class="form-label">Database Engine</label>
+                            <select class="form-select" id="aws-rds-engine" name="engine" required>
+                                <option value="postgresql">PostgreSQL</option>
+                                <option value="mysql">MySQL</option>
+                                <option value="mariadb">MariaDB</option>
+                                <option value="sqlserver">SQL Server</option>
+                                <option value="oracle">Oracle</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="aws-rds-database" class="form-label">Database Name</label>
+                        <input type="text" class="form-control" id="aws-rds-database" name="database" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="aws-rds-username" class="form-label">Master Username</label>
+                        <input type="text" class="form-control" id="aws-rds-username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="aws-rds-password" class="form-label">Master Password</label>
+                        <input type="password" class="form-control" id="aws-rds-password" name="password" required>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary cancel-connection">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Connect</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- AWS Neptune Connection Form -->
+            <div id="aws-neptune-form" class="connection-form">
+                <div class="row align-items-center mb-4">
+                    <div class="col-md-3">
+                        <div class="db-detail-icon">
+                            <i class="bi bi-tsunami text-success"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <h3>AWS Neptune Connection</h3>
+                        <p>Enter the details to connect to your Amazon Neptune graph database.</p>
+                    </div>
+                </div>
+                <form id="form-aws-neptune" action="/set-connection" method="post">
+                    <input type="hidden" name="db_type" value="aws-neptune">
+                    <div class="mb-3">
+                        <label for="aws-neptune-endpoint" class="form-label">Neptune Endpoint</label>
+                        <input type="text" class="form-control" id="aws-neptune-endpoint" name="endpoint" placeholder="your-neptune-instance.region.neptune.amazonaws.com" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="aws-neptune-port" class="form-label">Port</label>
+                            <input type="number" class="form-control" id="aws-neptune-port" name="port" value="8182" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="aws-neptune-query-language" class="form-label">Query Language</label>
+                            <select class="form-select" id="aws-neptune-query-language" name="query_language" required>
+                                <option value="sparql">SPARQL</option>
+                                <option value="gremlin">Gremlin</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="aws-neptune-iam-role" class="form-label">IAM Role ARN (if using IAM auth)</label>
+                        <input type="text" class="form-control" id="aws-neptune-iam-role" name="iam_role" placeholder="arn:aws:iam::123456789012:role/NeptuneAccessRole">
+                    </div>
+                    <div class="mb-3">
+                        <label for="aws-neptune-region" class="form-label">AWS Region</label>
+                        <input type="text" class="form-control" id="aws-neptune-region" name="region" placeholder="us-east-1" required>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-secondary cancel-connection">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Connect</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer bg-dark text-light">
+        <div class="container">
+            <p class="mb-0">© 2025 Power System Database Assistant. Built with LangGraph and Language Model technology.</p>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleThemeBtn = document.getElementById('toggle-theme');
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            const dbCards = document.querySelectorAll('.db-card');
+            const connectionForms = document.querySelectorAll('.connection-form');
+            const cancelButtons = document.querySelectorAll('.cancel-connection');
+            
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('preferred-theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-bs-theme', savedTheme);
+                updateThemeUI(savedTheme);
+            }
+            
+            function updateThemeUI(theme) {
+                if (theme === 'light') {
+                    themeIcon.className = 'bi bi-moon-fill';
+                    themeText.textContent = 'Dark Mode';
+                } else {
+                    themeIcon.className = 'bi bi-sun-fill';
+                    themeText.textContent = 'Light Mode';
+                }
+            }
+            
+            // Toggle theme
+            toggleThemeBtn.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('preferred-theme', newTheme);
+                updateThemeUI(newTheme);
+            });
+            
+            // Database card selection
+            dbCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const dbType = this.getAttribute('data-db-type');
+                    const formId = `${dbType}-form`;
+                    
+                    // Hide all forms first
+                    connectionForms.forEach(form => {
+                        form.style.display = 'none';
+                    });
+                    
+                    // Show the selected form
+                    const selectedForm = document.getElementById(formId);
+                    if (selectedForm) {
+                        selectedForm.style.display = 'block';
+                        selectedForm.classList.add('fade-in');
+                        
+                        // Scroll to the form
+                        selectedForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+            
+            // Cancel buttons
+            cancelButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const form = this.closest('.connection-form');
+                    form.style.display = 'none';
+                });
+            });
+            
+            // Form submission
+            document.querySelectorAll('form[action="/set-connection"]').forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const formData = new FormData(this);
+                    const dbType = formData.get('db_type');
+                    
+                    // Convert FormData to a plain object
+                    const data = {};
+                    formData.forEach((value, key) => {
+                        data[key] = value;
+                    });
+                    
+                    fetch('/set-connection', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.href = '/chat';
+                        } else {
+                            alert(`Connection error: ${data.error}`);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Failed to establish connection. Please check your details and try again.');
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

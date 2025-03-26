@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power System GraphDB Assistant</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-container {
+            flex: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .chat-box {
+            height: 60vh;
+            overflow-y: auto;
+            border: 1px solid var(--bs-border-color);
+            border-radius: 5px;
+            padding: 10px;
+            background-color: var(--bs-secondary-bg);
+            margin-bottom: 15px;
+        }
+        
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        
+        .user-message {
+            margin-left: auto;
+            border-left: none;
+            border-right: 3px solid var(--bs-primary);
+        }
+        
+        .assistant-message {
+            border-left: 3px solid var(--bs-info);
+            border-right: none;
+        }
+        
+        .input-group {
+            margin-top: 10px;
+        }
+        
+        .prompt-examples {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: var(--bs-tertiary-bg);
+            border-radius: 5px;
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1030;
+        }
+        
+        /* Code snippet styling */
+        pre.code-block {
+            background-color: var(--bs-tertiary-bg);
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+            font-size: 0.9em;
+            margin: 10px 0;
+            border-left: 3px solid var(--bs-warning);
+        }
+        
+        /* Dark mode specific styles */
+        html[data-bs-theme="dark"] .user-message {
+            background-color: #2a3f5f;
+            color: #f8f9fa;
+        }
+        
+        html[data-bs-theme="dark"] .assistant-message {
+            background-color: #1a2638;
+            color: #e9ecef;
+        }
+        
+        html[data-bs-theme="dark"] pre.code-block {
+            background-color: #151e2d;
+            color: #f1fa8c;
+            border-color: #f1c40f;
+        }
+        
+        /* Light mode specific styles */
+        html[data-bs-theme="light"] .user-message {
+            background-color: #e3f2fd;
+            color: #0d6efd;
+        }
+        
+        html[data-bs-theme="light"] .assistant-message {
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+        
+        html[data-bs-theme="light"] pre.code-block {
+            background-color: #f8f9fa;
+            color: #343a40;
+            border-color: #fd7e14;
+        }
+        
+        .example-question {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .example-question:hover {
+            color: var(--bs-primary);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle">
+        <button class="btn btn-sm btn-outline-secondary" id="toggle-theme">
+            <i class="bi bi-sun-fill" id="theme-icon"></i>
+            <span id="theme-text">Light Mode</span>
+        </button>
+    </div>
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">Power System Database Assistant</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/chat">Chat</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container chat-container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="chat-box" id="chat-box">
+                    <div class="message assistant-message">
+                        Hi! I'm your Power System Equipment Database Assistant. Ask me questions about transformers, substations, terminals, and other power system equipment. I can work with different database types including GraphDB, PostgreSQL, AWS RDS, and AWS Neptune.
+                    </div>
+                </div>
+                
+                <div class="input-area">
+                    <div class="input-group mb-2">
+                        <select class="form-select flex-grow-0" id="model-select" style="max-width: 150px;">
+                            <option value="auto" selected>Auto-select</option>
+                            <option value="gemini">Gemini</option>
+                            <option value="llama3">Llama 3</option>
+                        </select>
+                        <input type="text" id="user-input" class="form-control" placeholder="Type your question here...">
+                        <button class="btn btn-primary" id="send-btn">Send</button>
+                    </div>
+                    <div class="d-flex justify-content-end">
+                        <small class="text-muted">Model: <span id="current-model">Auto - selects the best model for your query</span></small>
+                    </div>
+                </div>
+                
+                <div class="prompt-examples mt-4">
+                    <h5>Example questions you can ask:</h5>
+                    <ul id="example-questions">
+                        <li class="example-question">List all transformers with voltage level above 300</li>
+                        <li class="example-question">Show me details of transformer TX001</li>
+                        <li class="example-question">What are the locations of all substations?</li>
+                        <li class="example-question">Find all connected terminals and their equipment</li>
+                        <li class="example-question">Compare voltage levels of all transformers</li>
+                        <li class="example-question">What equipment is in Main Substation?</li>
+                        <li class="example-question">Calculate the average length of transmission lines</li>
+                        <li class="example-question">Find transformers that have a status of 'standby'</li>
+                        <li class="example-question">List substations ordered by number of equipment</li>
+                        <li class="example-question">Show the relationship between terminals and transformers</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatBox = document.getElementById('chat-box');
+            const userInput = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const toggleThemeBtn = document.getElementById('toggle-theme');
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            const exampleQuestions = document.querySelectorAll('.example-question');
+            const modelSelect = document.getElementById('model-select');
+            const currentModelText = document.getElementById('current-model');
+            
+            // Generate a random user ID for this session
+            const userId = 'user_' + Math.random().toString(36).substring(2, 9);
+            
+            // Check for saved theme preference
+            const savedTheme = localStorage.getItem('preferred-theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-bs-theme', savedTheme);
+                updateThemeUI(savedTheme);
+            }
+            
+            function updateThemeUI(theme) {
+                if (theme === 'light') {
+                    themeIcon.className = 'bi bi-moon-fill';
+                    themeText.textContent = 'Dark Mode';
+                } else {
+                    themeIcon.className = 'bi bi-sun-fill';
+                    themeText.textContent = 'Light Mode';
+                }
+            }
+            
+            // Toggle theme
+            toggleThemeBtn.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                document.documentElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('preferred-theme', newTheme);
+                updateThemeUI(newTheme);
+            });
+            
+            function addMessage(content, isUser) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = isUser ? 'message user-message' : 'message assistant-message';
+                
+                if (!isUser) {
+                    // Process code blocks in assistant messages
+                    // Look for query code blocks with ```sql or ```sparql
+                    const codeBlockRegex = /```(sql|sparql|graphdb|cypher)([\s\S]*?)```/g;
+                    let formattedContent = content;
+                    let match;
+                    
+                    // Replace code blocks with properly formatted HTML
+                    let lastIndex = 0;
+                    let processedContent = '';
+                    
+                    while ((match = codeBlockRegex.exec(content)) !== null) {
+                        // Add text before the code block
+                        processedContent += content.substring(lastIndex, match.index).replace(/\n/g, '<br>');
+                        
+                        // Add the code block with proper formatting
+                        const language = match[1]; // sql, sparql, etc.
+                        const code = match[2].trim();
+                        processedContent += `<pre class="code-block" data-language="${language}"><code>${code}</code></pre>`;
+                        
+                        lastIndex = match.index + match[0].length;
+                    }
+                    
+                    // Add any remaining text after the last code block
+                    processedContent += content.substring(lastIndex).replace(/\n/g, '<br>');
+                    
+                    messageDiv.innerHTML = processedContent;
+                } else {
+                    // Convert line breaks to <br> tags for user messages
+                    const formattedContent = content.replace(/\n/g, '<br>');
+                    messageDiv.innerHTML = formattedContent;
+                }
+                
+                chatBox.appendChild(messageDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+            
+            // Handle model selection change
+            modelSelect.addEventListener('change', function() {
+                const selectedModel = this.value;
+                let modelDescription;
+                
+                switch(selectedModel) {
+                    case 'auto':
+                        modelDescription = 'Auto - selects the best model for your query';
+                        break;
+                    case 'gemini':
+                        modelDescription = 'Gemini - Google\'s advanced language model';
+                        break;
+                    case 'llama3':
+                        modelDescription = 'Llama 3 - Meta\'s powerful open language model';
+                        break;
+                    default:
+                        modelDescription = 'Auto - selects the best model for your query';
+                }
+                
+                currentModelText.textContent = modelDescription;
+                
+                // Save preference in local storage
+                localStorage.setItem('preferred-model', selectedModel);
+            });
+            
+            // Load saved model preference if any
+            const savedModel = localStorage.getItem('preferred-model');
+            if (savedModel) {
+                modelSelect.value = savedModel;
+                // Trigger change event to update description
+                const event = new Event('change');
+                modelSelect.dispatchEvent(event);
+            }
+            
+            function sendMessage(message = null) {
+                const messageText = message || userInput.value.trim();
+                if (!messageText) return;
+                
+                // Get selected model
+                const selectedModel = modelSelect.value;
+                
+                // Add user message to chat
+                addMessage(messageText, true);
+                userInput.value = '';
+                
+                // Show loading indicator
+                const loadingDiv = document.createElement('div');
+                loadingDiv.className = 'message assistant-message';
+                loadingDiv.textContent = 'Thinking...';
+                chatBox.appendChild(loadingDiv);
+                
+                // Send message to backend
+                fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        message: messageText,
+                        model_choice: selectedModel
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Remove loading indicator
+                    chatBox.removeChild(loadingDiv);
+                    
+                    if (data.error) {
+                        addMessage('Error: ' + data.error, false);
+                    } else {
+                        addMessage(data.response, false);
+                    }
+                })
+                .catch(error => {
+                    // Remove loading indicator
+                    chatBox.removeChild(loadingDiv);
+                    addMessage('Error: Could not connect to the server. Please try again.', false);
+                    console.error('Error:', error);
+                });
+            }
+            
+            // Make example questions clickable
+            exampleQuestions.forEach(question => {
+                question.addEventListener('click', function() {
+                    const questionText = this.textContent;
+                    userInput.value = questionText;
+                    sendMessage(questionText);
+                });
+            });
+            
+            // Event listeners
+            sendBtn.addEventListener('click', () => sendMessage());
+            
+            userInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Focus input on page load
+            userInput.focus();
+            
+            // Initialize Bootstrap tooltips
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            if (typeof bootstrap !== 'undefined') {
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

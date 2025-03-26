@@ -1,0 +1,9 @@
+create an AI Agent which generates Schema
+
+1. app.py -- execute_query() -- generate automatic schema (use ddl)
+instead of passing sample_schema & SAMPLE_POWER_SYSTEM_DATA (actual_data as a sample) 
+pass schema based on DDL and data is based on vector DB
+
+2. based on db generate question and pass it for Example_questions
+   in index.html - 181 line
+3. app.py - 411, 412 comments
